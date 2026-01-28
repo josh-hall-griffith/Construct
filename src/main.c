@@ -10,30 +10,10 @@ Description: A simple tile-based map editor template using raylib for
 */
 
 #include "raylib.h"
-#include <stdio.h>
 #include "resource_dir.h"
 
-// Defines
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 1024
-#define TILE_SIZE 64
+#include "PCG/PCG.h"
 
-// Standard Map Dimensions
-#define MAP_COLUMNS (SCREEN_WIDTH / TILE_SIZE)
-#define MAP_ROWS (SCREEN_HEIGHT / TILE_SIZE)
-
-// Tile Types
-#define TILE_TYPE_GRASS 0
-#define TILE_TYPE_ROCK 1
-
-// Console Representation
-#define GRASS_CHAR '.'
-#define ROCK_CHAR '#'
-
-// Forward declarations using standard [ROWS][COLS] sizing
-void CreateMap(int _tileArray[MAP_ROWS][MAP_COLUMNS]);
-void DrawMap(int _tileArray[MAP_ROWS][MAP_COLUMNS]);
-void PrintMap(int _tileArray[MAP_ROWS][MAP_COLUMNS]);
 
 int main()
 {
@@ -45,10 +25,10 @@ int main()
     Texture wabbit = LoadTexture("wabbit_alpha.png");
 
     // Initialize the map (Rows come first in memory for C arrays)
-    int tileArray[MAP_ROWS][MAP_COLUMNS] = { 0 };
-    
-    CreateMap(tileArray);
-    PrintMap(tileArray);
+    TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { 0 };
+
+    PCG_CreateMap(tileArray);
+    PCG_PrintMap(tileArray);
 
     while (!WindowShouldClose())
     {
@@ -56,11 +36,17 @@ int main()
         ClearBackground(BLACK);
 
         // Render the map data
-        DrawMap(tileArray);
+        PCG_DrawMap(tileArray);
 
         // Render UI Elements
         DrawText("The Construct Map Editor", 20, 20, 20, WHITE);
+
+		// Draw the wabbit texture for fun
+		// PCG IDEA: Make the wabbit controllable using keyboard input or have it react to the map like A* navigation
         DrawTexture(wabbit, 400, 200, WHITE);
+
+		// GUI controls
+		PCG_DrawGUI(tileArray);
 
         EndDrawing();
     }
@@ -70,63 +56,3 @@ int main()
     return 0;
 }
 
-// =============================================
-// CreateMap - Populates array using Row-Major order (y then x)
-// =============================================
-void CreateMap(int _tileArray[MAP_ROWS][MAP_COLUMNS])
-{
-    for (int y = 0; y < MAP_ROWS; y++)
-    {
-        for (int x = 0; x < MAP_COLUMNS; x++)
-        {
-            _tileArray[y][x] = GetRandomValue(TILE_TYPE_GRASS, TILE_TYPE_ROCK);
-        }
-    }
-}
-
-// =============================================
-// DrawMap - Renders the data using Row-Major traversal
-// =============================================
-void DrawMap(int _tileArray[MAP_ROWS][MAP_COLUMNS])
-{
-    for (int y = 0; y < MAP_ROWS; y++)
-    {
-        for (int x = 0; x < MAP_COLUMNS; x++)
-        {
-            Color tileColor;
-            
-            if (_tileArray[y][x] == TILE_TYPE_GRASS)
-            {
-                tileColor = LIGHTGRAY;
-            }
-            else
-            {
-                tileColor = DARKGRAY;
-            }
-            
-            // Note: Screen Coordinates are still (x, y)
-            DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1, tileColor);
-        }
-    }
-}
-
-// =============================================
-// PrintMap - Standard console output (Row by Row)
-// =============================================
-void PrintMap(int _tileArray[MAP_ROWS][MAP_COLUMNS])
-{
-    printf("\n-------Map Layout:--------\n");
-    for (int y = 0; y < MAP_ROWS; y++)
-    {
-        for (int x = 0; x < MAP_COLUMNS; x++)
-        {
-            if (_tileArray[y][x] == TILE_TYPE_GRASS) {
-				printf("%c", GRASS_CHAR);
-            } else {
-                printf("%c", ROCK_CHAR);
-            }
-        }
-        printf("\n");
-    }
-    printf("--------------------------\n");
-}
