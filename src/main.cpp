@@ -27,8 +27,8 @@ int main()
     // Initialize the map (Rows come first in memory for C arrays)
     TileType tileArray[MAP_ROWS][MAP_COLUMNS];
 
-    PCG_CreateMap(tileArray);
-    PCG_PrintMap(tileArray);
+    PCG::PCG_CreateMap(tileArray);
+    PCG::PCG_PrintMap(tileArray);
 
     while (!WindowShouldClose())
     {
@@ -36,7 +36,7 @@ int main()
         ClearBackground(BLACK);
 
         // Render the map data
-        PCG_DrawMap(tileArray);
+        PCG::PCG_DrawMap(tileArray);
 
         // Render UI Elements
         DrawText("The Construct Map Editor", 20, 20, 20, WHITE);
@@ -46,7 +46,7 @@ int main()
         DrawTexture(wabbit, 400, 200, WHITE);
 
 		// GUI controls
-		PCG_DrawGUI(tileArray);
+		PCG::PCG_DrawGUI(tileArray);
 
         EndDrawing();
     }

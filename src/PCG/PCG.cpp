@@ -6,16 +6,20 @@ Author:      Griffith Film School
 Description: PCG Module Source File for Construct Map Editor Template
 ===============================================================================
 */
+
+// TODO: remove use of printf and replace with C++ std::cout for better adherence to C++ standards
+// Replace NULL with nullptr for better type safety and adherence to C++ standards
+
 #include "PCG/PCG.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"     // Required for UI controls
-#include <stdio.h>
-
+#include <stdio.h>      // TODO: once all printf is removed, this can be removed
+#include <iostream>     // For std::cout
 
 // =============================================
 // PCG_CreateMap - Populates array using Row-Major order (y then x)
 // =============================================
-void PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
+void PCG::PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 {
     // PCG IDEA: Use a more complex PCG algorithm here for better map generation
     for (int y = 0; y < MAP_ROWS; y++)
@@ -32,14 +36,14 @@ void PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 // =============================================
 // PCG_DrawMap - Renders the data using Row-Major traversal
 // =============================================
-void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
+void PCG::PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 {
     for (int y = 0; y < MAP_ROWS; y++)
     {
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             // PCG IDEA: Use different sprites or textures for different tile types instead of rectangles
-            DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, PCG_GetTileColor((TileType)_tileArray[y][x]));
+            DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, PCG::PCG_GetTileColor((TileType)_tileArray[y][x]));
         }
     }
 }
@@ -47,67 +51,67 @@ void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 // =============================================
 // PCG_PrintMap - Standard console output (Row by Row)
 // =============================================
-void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
+void PCG::PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 {
-    printf("\n-------Map Layout:--------\n");
+    std::cout << "\n-------Map Layout:--------\n";
     for (int y = 0; y < MAP_ROWS; y++)
     {
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             if (_tileArray[y][x] == TILE_TYPE_GRASS) {
-				printf("%c", GRASS_CHAR);
+				std::cout << GRASS_CHAR;
             } else if (_tileArray[y][x] == TILE_TYPE_ROCK) {
-                printf("%c", ROCK_CHAR);
+                std::cout << ROCK_CHAR;
             }else{
                 // What ever value is here, just print the integer
-                printf("%i", _tileArray[y][x]);
+                std::cout << _tileArray[y][x];
             }
         }
-        printf("\n");
+        std::cout << "\n";
     }
-    printf("--------------------------\n");
+    std::cout << "--------------------------\n";
 }
 
 // =============================================
 // PCG_DrawGUI - Renders GUI Elements
 // =============================================
-void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS])
+void PCG::PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS])
 {
     // PCG IDEA: Add more GUI controls for different PCG parameters. Tidy up layout as needed
     // Reset Button
     if(GuiButton(RESET_BUTTON_BOUNDS, "Reset Map"))
     {
-        PCG_CreateMap(tileArray);
-        PCG_PrintMap(tileArray);
+        PCG::PCG_CreateMap(tileArray);
+        PCG::PCG_PrintMap(tileArray);
     }
 
     // Save Map Button
     Rectangle saveButtonBounds = { BUTTON_X, BUTTON_Y - 70, BUTTON_WIDTH, BUTTON_HEIGHT };
     if(GuiButton(saveButtonBounds, "Save Map Image"))
     {
-        PCG_SaveMapImage(tileArray, MAP_IMAGE_FILENAME);
+        PCG::PCG_SaveMapImage(tileArray, MAP_IMAGE_FILENAME);
     }
 
     // Save Data Button
     Rectangle saveDataButtonBounds = { BUTTON_X, BUTTON_Y - 140, BUTTON_WIDTH, BUTTON_HEIGHT };
     if(GuiButton(saveDataButtonBounds, "Save Map Data"))
     {
-        PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
+        PCG::PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
     }
 
     // Load Data Button
     Rectangle loadDataButtonBounds = { BUTTON_X, BUTTON_Y - 210, BUTTON_WIDTH, BUTTON_HEIGHT };
     if(GuiButton(loadDataButtonBounds, "Load Map Data"))
     {
-        PCG_LoadMapData(tileArray, MAP_TEXT_FILENAME);
-        PCG_PrintMap(tileArray);
+        PCG::PCG_LoadMapData(tileArray, MAP_TEXT_FILENAME);
+        PCG::PCG_PrintMap(tileArray);
     }
 }
 
 // =============================================
 // PCG_SaveMapImage - Saves the map as an image file
 // =============================================
-void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename)
+void PCG::PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename)
 {
     // PCG IDEA: Enhance image saving with different formats or resolutions, or add a text input for filename
     Image mapImage = GenImageColor(MAP_COLUMNS, MAP_ROWS, BLACK);
@@ -115,7 +119,7 @@ void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* fi
     {
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
-            Color tileColor = PCG_GetTileColor((TileType)_tileArray[y][x]);
+            Color tileColor = PCG::PCG_GetTileColor((TileType)_tileArray[y][x]);
             ImageDrawPixel(&mapImage, x, y, tileColor);
         }
     }
@@ -130,15 +134,15 @@ void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* fi
 // =============================================
 // PCG_SaveMapData - Saves the map data to a text file
 // =============================================
-void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
+void PCG::PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
 {
     // PCG IDEA: Add error handling and user feedback for file operations
     // add input for filename
 
     // open file for write and check for errors
     FILE* file = fopen(_filename, "w");
-    if (file == NULL) {
-        printf("Error opening file %s for writing.\n", _filename);
+    if (file == nullptr) {                  // Use nullptr for better type safety
+        std::cout << "Error opening file " << _filename << " for writing.\n";
         return;
     }
 
@@ -148,7 +152,7 @@ void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _fi
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             // write each tile character to the file using the get tile char helper function
-            fputc(GetTileChar((TileType)_tileArray[y][x]), file);
+            fputc(PCG::GetTileChar((TileType)_tileArray[y][x]), file);
         }
         // add the newline character at the end of each row
         fputc('\n', file); // New line at the end of each row
@@ -162,7 +166,7 @@ void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _fi
 // =============================================
 // PCG_LoadMapData - Loads the map data from a text file
 // =============================================
-void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
+void PCG::PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
 {
     // PCG IDEA: Add error handling and user feedback for file operations
     // add input for filename loading
@@ -206,7 +210,7 @@ void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _fi
 // =============================================
 // PCG_GetTileColor - Returns the color for a given tile type
 // =============================================
-Color PCG_GetTileColor(TileType tileType){
+Color PCG::PCG_GetTileColor(TileType tileType){
     // PCG IDEA: Add more tile types here for more variety
     switch (tileType) {
         // PCG IDEA: Add more tile types here for more variety
@@ -223,7 +227,7 @@ Color PCG_GetTileColor(TileType tileType){
 // =============================================
 // PCG_GetTileChar - Returns the character representation for a given tile type
 // =============================================
-char GetTileChar(TileType tileType){
+char PCG::GetTileChar(TileType tileType){
     // PCG IDEA: Add more tile types here for more variety
     switch (tileType) {
         case TILE_TYPE_GRASS:
