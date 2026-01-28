@@ -25,7 +25,7 @@ int main()
     Texture wabbit = LoadTexture("wabbit_alpha.png");
 
     // Initialize the map (Rows come first in memory for C arrays)
-    TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { 0 };
+    TileType tileArray[MAP_ROWS][MAP_COLUMNS];
 
     PCG_CreateMap(tileArray);
     PCG_PrintMap(tileArray);
