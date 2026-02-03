@@ -7,14 +7,12 @@ Description: PCG Module Source File for Construct Map Editor Template
 ===============================================================================
 */
 
-// TODO: remove use of printf and replace with C++ std::cout for better adherence to C++ standards
-// Replace NULL with nullptr for better type safety and adherence to C++ standards
-
 #include "PCG/PCG.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"     // Required for UI controls
 #include <stdio.h>      // TODO: once all printf is removed, this can be removed
 #include <iostream>     // For std::cout
+#include <fstream>      // Standard C++ File I/O
 
 // =============================================
 // PCG_CreateMap - Populates array using Row-Major order (y then x)
@@ -26,9 +24,7 @@ void PCG::PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
     {
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
-            // PCG IDEA: Use noise functions, cellular automata, or other algorithms for more interesting maps
             _tileArray[y][x] = (TileType)GetRandomValue(0, TILE_COUNT - 1);   // Randomly assign tiles based on TILE_COUNT choosing from the TileType enum
-            //_tileArray[y][x] = GetPCGValue(); // example of using a custom PCG function
         }
     }
 }
@@ -42,7 +38,6 @@ void PCG::PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
     {
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
-            // PCG IDEA: Use different sprites or textures for different tile types instead of rectangles
             DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, PCG::PCG_GetTileColor((TileType)_tileArray[y][x]));
         }
     }
@@ -77,7 +72,6 @@ void PCG::PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 // =============================================
 void PCG::PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS])
 {
-    // PCG IDEA: Add more GUI controls for different PCG parameters. Tidy up layout as needed
     // Reset Button
     if(GuiButton(RESET_BUTTON_BOUNDS, "Reset Map"))
     {
@@ -136,12 +130,12 @@ void PCG::PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const cha
 // =============================================
 void PCG::PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
 {
-    // PCG IDEA: Add error handling and user feedback for file operations
-    // add input for filename
 
     // open file for write and check for errors
-    FILE* file = fopen(_filename, "w");
-    if (file == nullptr) {                  // Use nullptr for better type safety
+    //FILE* file = fopen(_filename, "w");
+    // C++ way to write file
+    std::ofstream file(_filename);
+    if (!file.is_open()) {                  // Use nullptr for better type safety
         std::cout << "Error opening file " << _filename << " for writing.\n";
         return;
     }
@@ -152,15 +146,18 @@ void PCG::PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             // write each tile character to the file using the get tile char helper function
-            fputc(PCG::GetTileChar((TileType)_tileArray[y][x]), file);
+            //fputc(PCG::GetTileChar((TileType)_tileArray[y][x]), file);
+            file << PCG::GetTileChar((TileType)_tileArray[y][x]);
+            
         }
         // add the newline character at the end of each row
-        fputc('\n', file); // New line at the end of each row
+        file << '\n'; // New line at the end of each row
     }
 
     // close the file
-    fclose(file);
-    printf("Map data saved successfully to %s\n", _filename);
+    //fclose(file);
+    file.close();
+    std::cout << "Map data saved successfully to " << _filename << "\n";
 }
 
 // =============================================
@@ -171,8 +168,11 @@ void PCG::PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char
     // PCG IDEA: Add error handling and user feedback for file operations
     // add input for filename loading
     // open file for read and check for errors
-    FILE* file = fopen(_filename, "r");
-    if (file == NULL) {
+    //FILE* file = fopen(_filename, "r");
+    
+    // C++ way to read file
+    std::ifstream file(_filename);
+    if (!file.is_open()) {
         printf("Error opening file %s for reading.\n", _filename);
         return;
     }   
@@ -182,29 +182,34 @@ void PCG::PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             // get each character from the file
-            int ch = fgetc(file);
+            //int ch = fgetc(file);
+            int ch = file.get();
 
             // Skip newlines and carriage returns (Handles Linux/Mac AND Windows files)
             while (ch == '\n' || ch == '\r') {
-                ch = fgetc(file);
+                //ch = fgetc(file);
+                ch = file.get();
             }
 
-            if (ch == GRASS_CHAR) {
+            //if (ch == GRASS_CHAR) {
+            if(ch == GRASS_CHAR) {
                 _tileArray[y][x] = TILE_TYPE_GRASS;
             } else if (ch == ROCK_CHAR) {
                 _tileArray[y][x] = TILE_TYPE_ROCK;
             }else if (ch == EOF) {
                 printf("Error: Reached end of file unexpectedly in %s\n", _filename);
-                fclose(file);
+                //fclose(file);
+                file.close();
                 return;
             } else {
-                printf("Warning: Skipping unexpected character '%c' (ASCII %d)\n", ch, ch);
+                std::cout << "Warning: Unknown character '" << static_cast<char>(ch) << "' in map data file. Using UNKNOWN tile type.\n";
                 x--; // Don't move to next tile, try reading again
             }
         }
     }
     // Close the file
-    fclose(file);
+    //fclose(file);
+    file.close();
 }
 
 // =============================================
@@ -231,9 +236,9 @@ char PCG::GetTileChar(TileType tileType){
     // PCG IDEA: Add more tile types here for more variety
     switch (tileType) {
         case TILE_TYPE_GRASS:
-            return GRASS_CHAR;
+            return GRASS_CHAR;   // Dereference to get char from const char*
         case TILE_TYPE_ROCK:
-            return ROCK_CHAR;
+            return ROCK_CHAR;    // Dereference to get char from const char*
         default:
             return '?'; // Unknown tile type
     }
