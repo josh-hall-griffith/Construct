@@ -29,9 +29,13 @@ int main()
 
     // Create TileMap instance
     PCG::TileMap tileMap;   
+    PCG::RandomGenerator randomGen;
 
-    //PCG::CreateMap(tileArray);
-    tileMap.CreateMap();
+    //PCG::CreateMap(tileArray); // no longer used as we use the generator to create the map
+
+    // apply the randomness to the map
+    randomGen.Generate(tileMap);
+
     //PCG::PrintMap(tileArray);
     tileMap.PrintMap();
 
@@ -54,7 +58,6 @@ int main()
 		// GUI controls
 		//PCG::DrawGUI(tileArray);
         tileMap.DrawGUI();
-
         EndDrawing();
     }
 

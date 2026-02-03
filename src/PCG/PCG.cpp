@@ -28,19 +28,17 @@ PCG::TileMap::~TileMap()
 }
 
 // =============================================
-// PCG_CreateMap - Populates array using Row-Major order (y then x)
+// PCG_SetTile - Sets the tile at (x, y) to the specified type
 // =============================================
-void PCG::TileMap::CreateMap()
-{
-    // PCG IDEA: Use a more complex PCG algorithm here for better map generation
-    for (int y = 0; y < MAP_ROWS; y++)
-    {
-        for (int x = 0; x < MAP_COLUMNS; x++)
-        {
-            tileArray[y][x] = (TileType)GetRandomValue(0, TILE_COUNT - 1);   // Randomly assign tiles based on TILE_COUNT choosing from the TileType enum
-        }
+void PCG::TileMap::SetTile(int x, int y, TileType type) {
+    // Basic bounds checking
+    if (x >= 0 && x < MAP_COLUMNS && y >= 0 && y < MAP_ROWS) {
+        // Set the tile
+        tileArray[y][x] = type;
     }
 }
+
+
 
 // =============================================
 // PCG_DrawMap - Renders the data using Row-Major traversal
@@ -66,14 +64,7 @@ void PCG::TileMap::PrintMap() const
     {
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
-            if (tileArray[y][x] == TILE_TYPE_GRASS) {
-				std::cout << GRASS_CHAR;
-            } else if (tileArray[y][x] == TILE_TYPE_ROCK) {
-                std::cout << ROCK_CHAR;
-            }else{
-                // What ever value is here, just print the integer
-                std::cout << tileArray[y][x];
-            }
+            std::cout << GetTileChar((TileType)tileArray[y][x]);
         }
         std::cout << "\n";
     }
@@ -86,12 +77,26 @@ void PCG::TileMap::PrintMap() const
 void PCG::TileMap::DrawGUI()
 {
     // Reset Button
-    if(GuiButton(RESET_BUTTON_BOUNDS, "Reset Map"))
+    if(GuiButton(RESET_BUTTON_BOUNDS, "Random Map"))
     {
-        CreateMap();
+        //CreateMap();
+        // We use the abstract generator to simply call generate on this map
+        // the implementation of generate will depend on the actual generator type passed in (e.g., RandomGenerator)
+        // At the end of the day, it doesn't matter
+        PCG::RandomGenerator randomGen;
+        randomGen.Generate(*this); // regenerate the map using the random generator
         PrintMap();
     }
 
+    // Perlin Noise Button
+    Rectangle noiseButtonBounds = { BUTTON_X - 220, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT };
+    if(GuiButton(noiseButtonBounds, "Perlin Noise Map"))
+    {
+        PCG::PerlinNoiseGenerator perlinGen;
+        perlinGen.Generate(*this); // regenerate the map using the Perlin noise generator
+        PrintMap();
+    }
+    
     // Save Map Button
     Rectangle saveButtonBounds = { BUTTON_X, BUTTON_Y - 70, BUTTON_WIDTH, BUTTON_HEIGHT };
     if(GuiButton(saveButtonBounds, "Save Map Image"))
@@ -118,7 +123,7 @@ void PCG::TileMap::DrawGUI()
 // =============================================
 // PCG_SaveMapImage - Saves the map as an image file
 // =============================================
-void PCG::TileMap::SaveMapImage(const char* _filename)
+void PCG::TileMap::SaveMapImage(const char* _filename) const
 {
     // PCG IDEA: Enhance image saving with different formats or resolutions, or add a text input for filename
     Image mapImage = GenImageColor(MAP_COLUMNS, MAP_ROWS, BLACK);
@@ -141,14 +146,13 @@ void PCG::TileMap::SaveMapImage(const char* _filename)
 // =============================================
 // PCG_SaveMapData - Saves the map data to a text file
 // =============================================
-void PCG::TileMap::SaveMapData(const char* _filename)
+void PCG::TileMap::SaveMapData(const char* _filename) const
 {
 
     // open file for write and check for errors
-    //FILE* file = fopen(_filename, "w");
     // C++ way to write file
     std::ofstream file(_filename);
-    if (!file.is_open()) {                  // Use nullptr for better type safety
+    if (!file.is_open()) {                 
         std::cout << "Error opening file " << _filename << " for writing.\n";
         return;
     }
@@ -159,7 +163,6 @@ void PCG::TileMap::SaveMapData(const char* _filename)
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             // write each tile character to the file using the get tile char helper function
-            //fputc(PCG::GetTileChar((TileType)_tileArray[y][x]), file);
             file << GetTileChar((TileType)tileArray[y][x]);
             
         }
@@ -168,7 +171,6 @@ void PCG::TileMap::SaveMapData(const char* _filename)
     }
 
     // close the file
-    //fclose(file);
     file.close();
     std::cout << "Map data saved successfully to " << _filename << "\n";
 }
@@ -178,10 +180,8 @@ void PCG::TileMap::SaveMapData(const char* _filename)
 // =============================================
 void PCG::TileMap::LoadMapData(const char* _filename)
 {
-    // PCG IDEA: Add error handling and user feedback for file operations
     // add input for filename loading
     // open file for read and check for errors
-    //FILE* file = fopen(_filename, "r");
     
     // C++ way to read file
     std::ifstream file(_filename);
@@ -195,12 +195,10 @@ void PCG::TileMap::LoadMapData(const char* _filename)
         for (int x = 0; x < MAP_COLUMNS; x++)
         {
             // get each character from the file
-            //int ch = fgetc(file);
             int ch = file.get();
 
             // Skip newlines and carriage returns (Handles Linux/Mac AND Windows files)
             while (ch == '\n' || ch == '\r') {
-                //ch = fgetc(file);
                 ch = file.get();
             }
 
@@ -221,7 +219,6 @@ void PCG::TileMap::LoadMapData(const char* _filename)
         }
     }
     // Close the file
-    //fclose(file);
     file.close();
 }
 
@@ -255,4 +252,51 @@ char PCG::TileMap::GetTileChar(TileType tileType) const{
         default:
             return '?'; // Unknown tile type
     }
+}
+
+// -----------------------------------------------------------------
+
+// =============================================
+// PCG_RandomGenerator - Example implementation of a simple random generator
+// =============================================
+void PCG::RandomGenerator::Generate(PCG::TileMap& _map) {
+    for (int y = 0; y < MAP_ROWS; y++)
+    {
+        for (int x = 0; x < MAP_COLUMNS; x++)
+        {
+            _map.SetTile(x, y, (TileType)GetRandomValue(0, TILE_COUNT - 1));   // Randomly assign tiles based on TILE_COUNT choosing from the TileType enum
+        }
+    }
+}
+
+// =============================================
+// PCG_PerlinNoiseGenerator - Example implementation of a Perlin noise based generator
+// =============================================
+void PCG::PerlinNoiseGenerator::Generate(PCG::TileMap& _map) {
+    
+    // Use large ranom offsets to guarantee a uniqe map section every time.
+    int randomOffsetX = GetRandomValue(0, 1000);
+    int randomOffsetY = GetRandomValue(0, 1000); 
+
+    // increasing the scale to make noise features (blobs) smaller
+    float noiseScale = 2.5f;
+
+    // Raylib Perlin noise
+    Image noiseImage = GenImagePerlinNoise(MAP_COLUMNS, MAP_ROWS, randomOffsetX, randomOffsetY, noiseScale);
+    
+    for(int y = 0; y < MAP_ROWS; y++)
+    {
+        for (int x = 0; x < MAP_COLUMNS; x++)
+        {
+            Color pixelColor = GetImageColor(noiseImage, x, y);
+            // Simple thresholding based on brightness
+            float brightness = (pixelColor.r + pixelColor.g + pixelColor.b) / (3.0f * 255.0f);
+            if (brightness < 0.5f) {
+                _map.SetTile(x, y, TILE_TYPE_ROCK);
+            } else {
+                _map.SetTile(x, y, TILE_TYPE_GRASS);
+            }
+        }
+    }
+    UnloadImage(noiseImage);
 }

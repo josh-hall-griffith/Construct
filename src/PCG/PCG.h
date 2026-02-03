@@ -56,7 +56,10 @@ constexpr char MAP_IMAGE_FILENAME[] = "pcg_map.png";
 // PCG Namespace
 // Encapsulates all PCG related functions and definitions
 namespace PCG {
+    // Forward Declaration: Tells TileMap that Generator exists
+    class Generator;
 
+    // TileMap Class
     // Example of using classes in C++ for encapsulation and organisation
     class TileMap {
         public:
@@ -64,23 +67,46 @@ namespace PCG {
             ~TileMap();
 
             // Methods
-            void CreateMap(); 
             void PrintMap() const; // Mark as const: it only reads data
             void DrawMap() const; // Mark as const: it only reads data
             void DrawGUI();
 
             // File Operations
-            void SaveMapData(const char* _filename);
+            void SaveMapData(const char* _filename) const; // Mark as const: it only reads data
             void LoadMapData(const char* _filename);
-            void SaveMapImage(const char* _filename);
+            void SaveMapImage(const char* _filename) const; // Mark as const: it only reads data
 
             // Helper Functions
+            void SetTile(int x, int y, TileType tileType);  
             Color GetTileColor(TileType tileType) const;    // Mark as const: it only reads data
             char GetTileChar(TileType tileType) const;      // Mark as const: it only reads data
             
         private:
             TileType tileArray[MAP_ROWS][MAP_COLUMNS] = {};  // 2D array to hold the tile data. we use {} to zero initialize the array
     };
+
+    // Generator pure virtual Class
+    class Generator {
+        public:
+            // This is a pure virtual destructor to make this an abstract class
+            virtual ~Generator() = default;
+            // we will plan to operate on a tile map reference
+            virtual void Generate(TileMap& _map) = 0;    
+    };
+
+    // Implementation of a Generator
+    class RandomGenerator : public Generator {
+        public:
+            virtual void Generate(TileMap& _map) override;  // we override the pure virtual function
+    };  
+
+    // Implementation of a noise Generator
+    class PerlinNoiseGenerator : public Generator {
+        public:
+            virtual void Generate(TileMap& _map) override;  // we override the pure virtual function
+    };
+
+
 };
 
 
