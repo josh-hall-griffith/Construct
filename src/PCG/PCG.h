@@ -56,19 +56,31 @@ constexpr char MAP_IMAGE_FILENAME[] = "pcg_map.png";
 // PCG Namespace
 // Encapsulates all PCG related functions and definitions
 namespace PCG {
-    
-    // Declare Functions using standard [ROWS][COLS] sizing
-    void PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
-    void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
-    void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS]);
 
-    Color PCG_GetTileColor(TileType tileType);
-    char GetTileChar(TileType tileType);
+    // Example of using classes in C++ for encapsulation and organisation
+    class TileMap {
+        public:
+            TileMap();
+            ~TileMap();
 
-    void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
-    void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
-    void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
-    void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
+            // Methods
+            void CreateMap(); 
+            void PrintMap() const; // Mark as const: it only reads data
+            void DrawMap() const; // Mark as const: it only reads data
+            void DrawGUI();
+
+            // File Operations
+            void SaveMapData(const char* _filename);
+            void LoadMapData(const char* _filename);
+            void SaveMapImage(const char* _filename);
+
+            // Helper Functions
+            Color GetTileColor(TileType tileType) const;    // Mark as const: it only reads data
+            char GetTileChar(TileType tileType) const;      // Mark as const: it only reads data
+            
+        private:
+            TileType tileArray[MAP_ROWS][MAP_COLUMNS] = {};  // 2D array to hold the tile data. we use {} to zero initialize the array
+    };
 };
 
 

@@ -25,10 +25,15 @@ int main()
     Texture wabbit = LoadTexture("wabbit_alpha.png");
 
     // Initialize the map (Rows come first in memory for C arrays)
-    TileType tileArray[MAP_ROWS][MAP_COLUMNS];
+    //TileType tileArray[MAP_ROWS][MAP_COLUMNS];  
 
-    PCG::PCG_CreateMap(tileArray);
-    PCG::PCG_PrintMap(tileArray);
+    // Create TileMap instance
+    PCG::TileMap tileMap;   
+
+    //PCG::CreateMap(tileArray);
+    tileMap.CreateMap();
+    //PCG::PrintMap(tileArray);
+    tileMap.PrintMap();
 
     while (!WindowShouldClose())
     {
@@ -36,7 +41,8 @@ int main()
         ClearBackground(BLACK);
 
         // Render the map data
-        PCG::PCG_DrawMap(tileArray);
+        //PCG::DrawMap(tileArray);
+        tileMap.DrawMap();
 
         // Render UI Elements
         DrawText("The Construct Map Editor", 20, 20, 20, WHITE);
@@ -46,7 +52,8 @@ int main()
         DrawTexture(wabbit, 400, 200, WHITE);
 
 		// GUI controls
-		PCG::PCG_DrawGUI(tileArray);
+		//PCG::DrawGUI(tileArray);
+        tileMap.DrawGUI();
 
         EndDrawing();
     }
