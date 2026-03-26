@@ -13,7 +13,7 @@ int main() {
         BeginDrawing();
         ClearBackground(BLACK);
         PCG_DrawMap(tileArray); // Function from PCG.c
-        DrawText("Stage 1: Refactor Complete", 20, 20, 20, WHITE);
+        DrawText("Construct Map Editor", 20, 20, 20, WHITE);
         PCG_DrawGUI(tileArray);
         EndDrawing();
     }
