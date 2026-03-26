@@ -42,4 +42,14 @@ void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* fil
 #define MAP_IMAGE_FILENAME "pcg_map.png"
 void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
 
+// UI variable defines used to position buttons on screen
+#define BUTTON_WIDTH 200
+#define BUTTON_HEIGHT 50
+#define BUTTON_X (SCREEN_WIDTH - BUTTON_WIDTH - 20)
+#define BUTTON_Y (SCREEN_HEIGHT - BUTTON_HEIGHT - 20)
+#define RESET_BUTTON_BOUNDS (Rectangle){ BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT }
+
+// Declare UI drawing function
+void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS]);
+
 #endif // PCG_H

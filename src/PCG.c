@@ -129,3 +129,35 @@ void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* fi
     }
     UnloadImage(mapImage);
 }
+
+// Required to call Raylib gui buttons. Add this near the top of PCG.c
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h" 
+
+// ============================================= 
+// void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS])
+// ============================================= 
+void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS]) {
+    // Reset Button
+    if(GuiButton(RESET_BUTTON_BOUNDS, "Reset Map")) {
+        PCG_CreateMap(tileArray);
+    }
+
+    // Save Data Button
+    Rectangle saveRect = { BUTTON_X, BUTTON_Y - 70, BUTTON_WIDTH, BUTTON_HEIGHT };
+    if(GuiButton(saveRect, "Save Map Data")) {
+        PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
+    }
+    
+    // Load Data Button
+    Rectangle loadRect = { BUTTON_X, BUTTON_Y - 140, BUTTON_WIDTH, BUTTON_HEIGHT };
+    if(GuiButton(loadRect, "Load Map Data")) {
+        PCG_LoadMapData(tileArray, MAP_TEXT_FILENAME);
+    }
+
+    // Save Image Button
+    Rectangle imgRect = { BUTTON_X, BUTTON_Y - 210, BUTTON_WIDTH, BUTTON_HEIGHT };
+    if(GuiButton(imgRect, "Save Map PNG")) {
+        PCG_SaveMapImage(tileArray, MAP_IMAGE_FILENAME);
+    }
+}

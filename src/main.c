@@ -5,7 +5,6 @@
 int main() {
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Construct Map Editor");
-    PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
     
     TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { 0 };
     PCG_CreateMap(tileArray);
@@ -15,6 +14,7 @@ int main() {
         ClearBackground(BLACK);
         PCG_DrawMap(tileArray); // Function from PCG.c
         DrawText("Stage 1: Refactor Complete", 20, 20, 20, WHITE);
+        PCG_DrawGUI(tileArray);
         EndDrawing();
     }
     CloseWindow();
