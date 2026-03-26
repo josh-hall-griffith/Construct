@@ -45,3 +45,87 @@ void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
     // (Existing Print Logic here...)
     printf("--------------------------\n");
 }
+
+// ============================================= 
+// char GetTileChar(TileType tileType)
+// Return a char value based on the type of tile passed in
+// ============================================= 
+char GetTileChar(TileType tileType){
+    switch (tileType) {
+        case TILE_TYPE_GRASS: return GRASS_CHAR;
+        case TILE_TYPE_ROCK: return ROCK_CHAR;
+        default: return '?';
+    }
+}
+
+// ============================================= 
+// void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
+// Store our tilemap data to a text file using the input _filename
+// ============================================= 
+void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename) {
+    FILE* file = fopen(_filename, "w"); // "w" = Write
+    if (file == NULL) {
+        return;
+    }
+    
+    // Write each single tileArray charater into our file stream
+    for (int y = 0; y < MAP_ROWS; y++) {
+        for (int x = 0; x < MAP_COLUMNS; x++) {
+            fputc(GetTileChar(_tileArray[y][x]), file);
+        }
+        fputc('\n', file); // New line at end of row
+    }
+    fclose(file);
+    printf("Map saved to %s\n", _filename);
+}
+
+
+// ============================================= 
+// void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
+// Load our tilemap data from a text file, using input _filename
+// ============================================= 
+void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename) {
+    FILE* file = fopen(_filename, "r"); // "r" = Read
+    if (file == NULL) {
+        return;
+    }
+    
+    // Get each character from our file stream, and load it into our tileMap array
+    for (int y = 0; y < MAP_ROWS; y++) {
+        for (int x = 0; x < MAP_COLUMNS; x++) {
+            int ch = fgetc(file);
+            // Skip invisible newline characters
+            while (ch == '\n' || ch == '\r') {
+                ch = fgetc(file);
+            }
+
+            if (ch == GRASS_CHAR) {
+                _tileArray[y][x] = TILE_TYPE_GRASS;
+            }
+            else if (ch == ROCK_CHAR) {
+                _tileArray[y][x] = TILE_TYPE_ROCK;
+            }
+        }
+    }
+    fclose(file);
+    printf("Map loaded from %s\n", _filename);
+}
+
+// ============================================= 
+// void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename)
+// Store our tileMap data as a .png image, using the input filename.
+// ============================================= 
+void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename) {
+    Image mapImage = GenImageColor(MAP_COLUMNS, MAP_ROWS, BLACK);
+    
+    for (int y = 0; y < MAP_ROWS; y++) {
+        for (int x = 0; x < MAP_COLUMNS; x++) {
+            Color c = PCG_GetTileColor(_tileArray[y][x]);
+            ImageDrawPixel(&mapImage, x, y, c);
+        }
+    }
+    if(ExportImage(mapImage, filename)) { 
+        printf("Image saved: %s\n", filename);
+    }
+    UnloadImage(mapImage);
+}

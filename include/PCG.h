@@ -29,4 +29,17 @@ void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
 void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
 Color PCG_GetTileColor(TileType tileType);
 
+// File Names
+#define MAP_TEXT_FILENAME "pcg_map_data.txt"
+
+// Helpers
+char GetTileChar(TileType tileType);
+
+// I/O Functions
+void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
+void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
+
+#define MAP_IMAGE_FILENAME "pcg_map.png"
+void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
+
 #endif // PCG_H
