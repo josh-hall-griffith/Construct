@@ -40,4 +40,13 @@
 # debug information files
 *.dwo
 /build
+/obj
+/bin
 .DS_Store
+.vs
+Construct.sln
+Construct.vcxproj
+Construct.vcxproj.filters
+Construct.vcxproj.user
+raylib.vcxproj
+raylib.vcxproj.filters
