@@ -5,10 +5,14 @@
 int main() {
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Construct Map Editor");
-    PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
     
+    // Create the tile map
     TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { 0 };
     PCG_CreateMap(tileArray);
+
+    // Save text and image
+    PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
+	PCG_SaveMapImage(tileArray, MAP_IMAGE_FILENAME);
 
     while (!WindowShouldClose()) {
         BeginDrawing();
