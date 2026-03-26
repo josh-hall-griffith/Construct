@@ -41,3 +41,9 @@
 *.dwo
 /build
 .DS_Store
+Construct.sln
+Construct.vcxproj
+Construct.vcxproj.filters
+Construct.vcxproj.user
+raylib.vcxproj
+raylib.vcxproj.filters
