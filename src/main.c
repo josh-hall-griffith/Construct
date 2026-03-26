@@ -61,7 +61,7 @@ int main()
         DrawMap(tileArray);
 
         // Render UI Elements
-        DrawText("The Construct Map Editor", 20, 20, 20, WHITE);
+        DrawText("Construct Map Editor", 20, 20, 20, WHITE);
         DrawTexture(wabbit, 400, 200, WHITE);
         EndDrawing();
     }
