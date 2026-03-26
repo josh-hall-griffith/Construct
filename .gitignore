@@ -40,7 +40,10 @@
 # debug information files
 *.dwo
 /build
+/obj
+/bin
 .DS_Store
+.vs
 Construct.sln
 Construct.vcxproj
 Construct.vcxproj.filters
