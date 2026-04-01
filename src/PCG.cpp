@@ -28,7 +28,10 @@ PCG::TileMap::TileMap()
 // =============================================
 PCG::TileMap::~TileMap()
 {
-
+    if(mapGenerator != nullptr) {
+        delete mapGenerator; // Clean up the map generator if it exists
+        mapGenerator = nullptr;
+	}
 }
 
 
@@ -204,10 +207,16 @@ void PCG::TileMap::DrawGUI() {
     }
 }
 
+// =============================================
+// SetMapGenerator and GetMapGenerator functions for our TileMap class, to allow us to assign a map generator to our tilemap, and retrieve it when we want to generate new maps.
+// =============================================
 void PCG::TileMap::SetMapGenerator(PCG::MapGenerator* generator) {
     mapGenerator = generator;
 }
 
+// =============================================
+// GetMapGenerator returns a pointer to the current map generator assigned to this tilemap, so we can call its Generate function when we want to create new maps.
+// =============================================
 PCG::MapGenerator* PCG::TileMap::GetMapGenerator() const {
     return mapGenerator;
 }
@@ -238,7 +247,7 @@ PCG::RandomMapGenerator::~RandomMapGenerator() {
 void PCG::RandomMapGenerator::Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
     for (int y = 0; y < MAP_ROWS; y++) {
         for (int x = 0; x < MAP_COLUMNS; x++) {
-            _tileArray[x][y] = (TileType)GetRandomValue(0, TILE_COUNT - 1);
+            _tileArray[y][x] = (TileType)GetRandomValue(0, TILE_COUNT - 1);
         }
     }
 }
@@ -274,10 +283,10 @@ void PCG::NoiseMapGenerator::Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]
 
             // Threshold: Dark spots are Rock, Light spots are Grass
             if (brightness < 0.5f) {
-                _tileArray[x][y] =TILE_TYPE_ROCK;
+                _tileArray[y][x] =TILE_TYPE_ROCK;
             }
             else {
-                _tileArray[x][y] = TILE_TYPE_GRASS;
+                _tileArray[y][x] = TILE_TYPE_GRASS;
             }
         }
     }

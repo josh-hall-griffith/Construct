@@ -10,8 +10,8 @@ int main() {
     PCG::TileMap tileMap; 
 
     // Create an instance of a generator we want to use.
-	//PCG::RandomMapGenerator pureRandomGenerator;
-    tileMap.SetMapGenerator(new PCG::NoiseMapGenerator());
+    tileMap.SetMapGenerator(new PCG::RandomMapGenerator());
+    //tileMap.SetMapGenerator(new PCG::NoiseMapGenerator());
 	tileMap.GetMapGenerator()->Generate(tileMap.GetTileData()); // Generate the map using the selected generator
 
     //tileMap.CreateMap();
@@ -24,6 +24,7 @@ int main() {
         tileMap.DrawGUI();
         EndDrawing();
     }
+
     CloseWindow();
     return 0;
 }
