@@ -1,9 +1,10 @@
-#ifndef PCG_H
-#define PCG_H
+#pragma once
 #include "raylib.h"
 
+namespace PCG {
 // Screen & Map Dimensions
-#define SCREEN_WIDTH 1024
+// TODO: refactor to be const
+const int SCREEN_WIDTH = 1024;
 #define SCREEN_HEIGHT 1024
 #define TILE_SIZE 64
 #define MAP_COLUMNS (SCREEN_WIDTH / TILE_SIZE)
@@ -17,14 +18,17 @@ typedef enum {
 } TileType;
 
 // Visual & Character settings
+// TODO: refactor to be const
 #define GRASS_CHAR '.'
 #define ROCK_CHAR '#'
-#define GRASS_COLOR (Color){69, 182, 156, 255}
-#define ROCK_COLOR (Color){114, 147, 160, 255}
+#define GRASS_COLOR {69, 182, 156, 255}
+#define ROCK_COLOR {114, 147, 160, 255}
 #define UNKNOWN_COLOR WHITE
 
 // Function Declarations
-void PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
+void CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
+
+// TODO: Refactor to remove prefix
 void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
 void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
 Color PCG_GetTileColor(TileType tileType);
@@ -47,9 +51,9 @@ void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* fi
 #define BUTTON_HEIGHT 50
 #define BUTTON_X (SCREEN_WIDTH - BUTTON_WIDTH - 20)
 #define BUTTON_Y (SCREEN_HEIGHT - BUTTON_HEIGHT - 20)
-#define RESET_BUTTON_BOUNDS (Rectangle){ BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT }
+#define RESET_BUTTON_BOUNDS { BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT }
 
 // Declare UI drawing function
 void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS]);
 
-#endif // PCG_H
+}
