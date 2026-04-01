@@ -5,17 +5,17 @@
 
 int main() {
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Construct Map Editor");
+    InitWindow(PCG::SCREEN_WIDTH, PCG::SCREEN_HEIGHT, "Construct Map Editor");
     
-    PCG::TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { PCG::TileType::TILE_TYPE_ROCK };
-    PCG::CreateMap(tileArray);
+    PCG::TileMap tileMap; 
+    tileMap.CreateMap();
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
-        PCG::PCG_DrawMap(tileArray); // Function from PCG.c
+        tileMap.DrawMap(); // Function from PCG.c
         DrawText("Construct Map Editor", 20, 20, 20, WHITE);
-        PCG::PCG_DrawGUI(tileArray);
+        tileMap.DrawGUI();
         EndDrawing();
     }
     CloseWindow();

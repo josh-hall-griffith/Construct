@@ -6,24 +6,57 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h" 
 
+// =============================================
+// Constructor for our TileMap class.
+// =============================================
+PCG::TileMap::TileMap() 
+{
+	// Initialize our tileMap array to all grass tiles by default when we create a new TileMap object. 
+    // We can change this later using the CreateMap() function, or by setting individual tiles with SetTile().
+    for(int y = 0; y < MAP_ROWS; y++) {
+        for(int x = 0; x < MAP_COLUMNS; x++) {
+            tileArray[y][x] = TILE_TYPE_GRASS;
+        }
+	}   
+}
+
+// =============================================
+// Destructor for our TileMap class.
+// =============================================
+PCG::TileMap::~TileMap()
+{
+
+}
+
 // ============================================= 
 // void PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 // ============================================= 
-void PCG::CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
+void PCG::TileMap::CreateMap() {
     for (int y = 0; y < MAP_ROWS; y++) {
         for (int x = 0; x < MAP_COLUMNS; x++) {
-            _tileArray[y][x] = (TileType)GetRandomValue(0, TILE_COUNT - 1);
+            tileArray[y][x] = (TileType)GetRandomValue(0, TILE_COUNT - 1);
         }
     }
 }
 
 
 // ============================================= 
+// void SetTile(int x, int y, TileType tileType)
+// set a tile in our tileMap array, using the input x and y coordinates, and the type of tile we want to set it to (tileType)
+// ============================================= 
+void PCG::TileMap::SetTile(int x, int y, TileType tileType)
+{
+    if (x >= 0 && x < MAP_COLUMNS && y >= 0 && y < MAP_ROWS) {
+        tileArray[y][x] = tileType;
+	}
+}
+
+// ============================================= 
 // Color PCG_GetTileColor(TileType tileType)
 // Return a colour based on the type type input
 // ============================================= 
-Color PCG::PCG_GetTileColor(PCG::TileType tileType){
-    switch (tileType) {
+Color PCG::TileMap::GetTileColor(PCG::TileType _tileType) const{
+    switch (_tileType) {
     case PCG::TileType::TILE_TYPE_GRASS: return GRASS_COLOR;
         case TILE_TYPE_ROCK: return ROCK_COLOR;
         default: return UNKNOWN_COLOR;
@@ -34,10 +67,10 @@ Color PCG::PCG_GetTileColor(PCG::TileType tileType){
 // ============================================= 
 // void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 // ============================================= 
-void PCG::PCG_DrawMap(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
+void PCG::TileMap::DrawMap() const {
     for (int y = 0; y < MAP_ROWS; y++) {
         for (int x = 0; x < MAP_COLUMNS; x++) {
-            DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, PCG::PCG_GetTileColor(_tileArray[y][x]));
+            DrawRectangle(x * PCG::TILE_SIZE, y * PCG::TILE_SIZE, PCG::TILE_SIZE, PCG::TILE_SIZE, PCG::TileMap::GetTileColor(tileArray[y][x]));
         }
     }
 }
@@ -45,7 +78,7 @@ void PCG::PCG_DrawMap(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
 // ============================================= 
 // void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
 // ============================================= 
-void PCG::PCG_PrintMap(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
+void PCG::TileMap::PrintMap() const {
     printf("\n-------Map Layout:--------\n");
     // (Existing Print Logic here...)
     printf("--------------------------\n");
@@ -55,10 +88,10 @@ void PCG::PCG_PrintMap(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
 // char GetTileChar(TileType tileType)
 // Return a char value based on the type of tile passed in
 // ============================================= 
-char PCG::GetTileChar(PCG::TileType tileType){
-    switch (tileType) {
-    case PCG::TileType::TILE_TYPE_GRASS: return GRASS_CHAR;
-    case PCG::TileType::TILE_TYPE_ROCK: return ROCK_CHAR;
+char PCG::TileMap::GetTileChar(PCG::TileType _tileType) const {
+    switch (_tileType) {
+    case PCG::TileType::TILE_TYPE_GRASS: return PCG::GRASS_CHAR;
+    case PCG::TileType::TILE_TYPE_ROCK: return PCG::ROCK_CHAR;
         default: return '?';
     }
 }
@@ -67,7 +100,7 @@ char PCG::GetTileChar(PCG::TileType tileType){
 // void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
 // Store our tilemap data to a text file using the input _filename
 // ============================================= 
-void PCG::PCG_SaveMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename) {
+void PCG::TileMap::SaveMapData(const char* _filename) const {
     //FILE* file = fopen(_filename, "w"); // "w" = Write
     std::fstream file;
 	file.open(_filename, std::ios::out); // Open C++ file stream for writing
@@ -77,10 +110,10 @@ void PCG::PCG_SaveMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const
     }
     
     // Write each single tileArray charater into our file stream
-    for (int y = 0; y < MAP_ROWS; y++) {
-        for (int x = 0; x < MAP_COLUMNS; x++) {
+    for (int y = 0; y < PCG::MAP_ROWS; y++) {
+        for (int x = 0; x < PCG::MAP_COLUMNS; x++) {
 			//fputc(PCG::GetTileChar(_tileArray[y][x]), file);  // old c-style file write
-			file.put(PCG::GetTileChar(_tileArray[y][x])); // Write char to C++ file stream
+			file.put(PCG::TileMap::GetTileChar(tileArray[y][x])); // Write char to C++ file stream
         }
         //fputc('\n', file); // New line at end of row
 		file.put('\n'); // New line at end of row for C++ file stream
@@ -95,7 +128,7 @@ void PCG::PCG_SaveMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const
 // void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
 // Load our tilemap data from a text file, using input _filename
 // ============================================= 
-void PCG::PCG_LoadMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename) {
+void PCG::TileMap::LoadMapData(const char* _filename) {
     //FILE* file = fopen(_filename, "r"); // "r" = Read // old c style
 	std::fstream file;  // C++ file stream object for reading
 	file.open(_filename, std::ios::in); // Open C++ file stream for reading
@@ -105,8 +138,8 @@ void PCG::PCG_LoadMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const
     }
     
     // Get each character from our file stream, and load it into our tileMap array
-    for (int y = 0; y < MAP_ROWS; y++) {
-        for (int x = 0; x < MAP_COLUMNS; x++) {
+    for (int y = 0; y < PCG::MAP_ROWS; y++) {
+        for (int x = 0; x < PCG::MAP_COLUMNS; x++) {
 			//int ch = fgetc(file); // old C-style file read
 			int ch = file.get(); // Get char from C++ file stream
             // Skip invisible newline characters
@@ -115,11 +148,11 @@ void PCG::PCG_LoadMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const
 				ch = file.get(); // Get char from C++ file stream for skipping newlines
             }
 
-            if (ch == GRASS_CHAR) {
-                _tileArray[y][x] = PCG::TileType::TILE_TYPE_GRASS;
+            if (ch == PCG::GRASS_CHAR) {
+                tileArray[y][x] = PCG::TileType::TILE_TYPE_GRASS;
             }
-            else if (ch == ROCK_CHAR) {
-                _tileArray[y][x] = PCG::TileType::TILE_TYPE_ROCK;
+            else if (ch == PCG::ROCK_CHAR) {
+                tileArray[y][x] = PCG::TileType::TILE_TYPE_ROCK;
             }
         }
     }
@@ -133,12 +166,12 @@ void PCG::PCG_LoadMapData(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const
 // void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename)
 // Store our tileMap data as a .png image, using the input filename.
 // ============================================= 
-void PCG::PCG_SaveMapImage(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename) {
-    Image mapImage = GenImageColor(MAP_COLUMNS, MAP_ROWS, BLACK);
+void PCG::TileMap::SaveMapImage(const char* filename) const {
+    Image mapImage = GenImageColor(PCG::MAP_COLUMNS, PCG::MAP_ROWS, BLACK);
     
-    for (int y = 0; y < MAP_ROWS; y++) {
-        for (int x = 0; x < MAP_COLUMNS; x++) {
-            Color c = PCG::PCG_GetTileColor(_tileArray[y][x]);
+    for (int y = 0; y < PCG::MAP_ROWS; y++) {
+        for (int x = 0; x < PCG::MAP_COLUMNS; x++) {
+            Color c = PCG::TileMap::GetTileColor(tileArray[y][x]);
             ImageDrawPixel(&mapImage, x, y, c);
         }
     }
@@ -150,31 +183,32 @@ void PCG::PCG_SaveMapImage(PCG::TileType _tileArray[MAP_ROWS][MAP_COLUMNS], cons
 }
 
 
-
 // ============================================= 
 // void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS])
 // ============================================= 
-void PCG::PCG_DrawGUI(PCG::TileType tileArray[MAP_ROWS][MAP_COLUMNS]) {
+void PCG::TileMap::DrawGUI() {
     // Reset Button
     if(GuiButton(RESET_BUTTON_BOUNDS, "Reset Map")) {
-        CreateMap(tileArray);
+        CreateMap();
     }
 
     // Save Data Button
-    Rectangle saveRect = { BUTTON_X, BUTTON_Y - 70, BUTTON_WIDTH, BUTTON_HEIGHT };
+    Rectangle saveRect = { PCG::BUTTON_X, PCG::BUTTON_Y - 70, PCG::BUTTON_WIDTH, PCG::BUTTON_HEIGHT };
     if(GuiButton(saveRect, "Save Map Data")) {
-        PCG_SaveMapData(tileArray, MAP_TEXT_FILENAME);
+        SaveMapData(MAP_TEXT_FILENAME);
     }
     
     // Load Data Button
-    Rectangle loadRect = { BUTTON_X, BUTTON_Y - 140, BUTTON_WIDTH, BUTTON_HEIGHT };
+    Rectangle loadRect = { PCG::BUTTON_X, PCG::BUTTON_Y - 140, PCG::BUTTON_WIDTH, PCG::BUTTON_HEIGHT };
     if(GuiButton(loadRect, "Load Map Data")) {
-        PCG_LoadMapData(tileArray, MAP_TEXT_FILENAME);
+        LoadMapData(MAP_TEXT_FILENAME);
     }
 
     // Save Image Button
-    Rectangle imgRect = { BUTTON_X, BUTTON_Y - 210, BUTTON_WIDTH, BUTTON_HEIGHT };
+    Rectangle imgRect = { PCG::BUTTON_X, PCG::BUTTON_Y - 210, PCG::BUTTON_WIDTH, PCG::BUTTON_HEIGHT };
     if(GuiButton(imgRect, "Save Map PNG")) {
-        PCG_SaveMapImage(tileArray, MAP_IMAGE_FILENAME);
+        SaveMapImage(MAP_IMAGE_FILENAME);
     }
 }
+
+
