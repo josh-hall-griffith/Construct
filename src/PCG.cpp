@@ -18,6 +18,9 @@ PCG::TileMap::TileMap()
             tileArray[y][x] = TILE_TYPE_GRASS;
         }
 	}   
+
+    // initialise the mapGenerator to null.
+	mapGenerator = nullptr;
 }
 
 // =============================================
@@ -26,17 +29,6 @@ PCG::TileMap::TileMap()
 PCG::TileMap::~TileMap()
 {
 
-}
-
-// ============================================= 
-// void PCG_CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
-// ============================================= 
-void PCG::TileMap::CreateMap() {
-    for (int y = 0; y < MAP_ROWS; y++) {
-        for (int x = 0; x < MAP_COLUMNS; x++) {
-            tileArray[y][x] = (TileType)GetRandomValue(0, TILE_COUNT - 1);
-        }
-    }
 }
 
 
@@ -65,7 +57,7 @@ Color PCG::TileMap::GetTileColor(PCG::TileType _tileType) const{
 
 
 // ============================================= 
-// void PCG_DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
+// void PCG_DrawMap()
 // ============================================= 
 void PCG::TileMap::DrawMap() const {
     for (int y = 0; y < MAP_ROWS; y++) {
@@ -76,7 +68,7 @@ void PCG::TileMap::DrawMap() const {
 }
 
 // ============================================= 
-// void PCG_PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS])
+// void PCG_PrintMap()
 // ============================================= 
 void PCG::TileMap::PrintMap() const {
     printf("\n-------Map Layout:--------\n");
@@ -97,7 +89,7 @@ char PCG::TileMap::GetTileChar(PCG::TileType _tileType) const {
 }
 
 // ============================================= 
-// void PCG_SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
+// void PCG_SaveMapData(const char* _filename)
 // Store our tilemap data to a text file using the input _filename
 // ============================================= 
 void PCG::TileMap::SaveMapData(const char* _filename) const {
@@ -125,7 +117,7 @@ void PCG::TileMap::SaveMapData(const char* _filename) const {
 
 
 // ============================================= 
-// void PCG_LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* _filename)
+// void PCG_LoadMapData(const char* _filename)
 // Load our tilemap data from a text file, using input _filename
 // ============================================= 
 void PCG::TileMap::LoadMapData(const char* _filename) {
@@ -163,7 +155,7 @@ void PCG::TileMap::LoadMapData(const char* _filename) {
 }
 
 // ============================================= 
-// void PCG_SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename)
+// void PCG_SaveMapImage(const char* filename)
 // Store our tileMap data as a .png image, using the input filename.
 // ============================================= 
 void PCG::TileMap::SaveMapImage(const char* filename) const {
@@ -184,12 +176,13 @@ void PCG::TileMap::SaveMapImage(const char* filename) const {
 
 
 // ============================================= 
-// void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS])
+// void PCG_DrawGUI()
 // ============================================= 
 void PCG::TileMap::DrawGUI() {
     // Reset Button
     if(GuiButton(RESET_BUTTON_BOUNDS, "Reset Map")) {
-        CreateMap();
+		// pass in this instances tileArray to our map generator, and call the generate function to fill it with new data.
+        GetMapGenerator()->Generate(tileArray);
     }
 
     // Save Data Button
@@ -211,4 +204,82 @@ void PCG::TileMap::DrawGUI() {
     }
 }
 
+void PCG::TileMap::SetMapGenerator(PCG::MapGenerator* generator) {
+    mapGenerator = generator;
+}
 
+PCG::MapGenerator* PCG::TileMap::GetMapGenerator() const {
+    return mapGenerator;
+}
+
+
+
+
+// =============================================
+// MapGenerator
+// =============================================
+// As it is a pure virtual class, we don't need to implement anything here. The derived classes will provide the actual generation logic.
+
+
+// Derived classes will implement the Generate function to create different types of maps.
+// =============================================
+// RandomMapGenerator
+// =============================================
+// Constructor
+PCG::RandomMapGenerator::RandomMapGenerator() {
+    // nothing to initialize for now, but you could seed a random generator here if you want reproducible maps
+}
+
+// Destructor
+PCG::RandomMapGenerator::~RandomMapGenerator() {
+    // nothing to clean up for now, but if you had allocated resources (like noise generators) you would release them here
+}
+
+void PCG::RandomMapGenerator::Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
+    for (int y = 0; y < MAP_ROWS; y++) {
+        for (int x = 0; x < MAP_COLUMNS; x++) {
+            _tileArray[x][y] = (TileType)GetRandomValue(0, TILE_COUNT - 1);
+        }
+    }
+}
+
+
+// =============================================
+// NoiseGenerator
+// =============================================
+// Constructor
+PCG::NoiseMapGenerator::NoiseMapGenerator() {
+    // nothing to initialize for now, but you could seed a random noise here if you want reproducible maps
+}
+
+// Destructor
+PCG::NoiseMapGenerator::~NoiseMapGenerator() {
+    // nothing to clean up for now, but if you had allocated resources (like noise generators) you would release them here
+}
+
+void PCG::NoiseMapGenerator::Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
+    // Random offsets make the map different every time
+    int offsetX = GetRandomValue(0, 1000);
+    int offsetY = GetRandomValue(0, 1000);
+    float scale = 2.5f;
+
+    // Raylib's Perlin Noise function
+    Image noiseImg = GenImagePerlinNoise(MAP_COLUMNS, MAP_ROWS, offsetX, offsetY, scale);
+
+    for (int y = 0; y < MAP_ROWS; y++) {
+        for (int x = 0; x < MAP_COLUMNS; x++) {
+            // Read the brightness of the noise pixel
+            Color col = GetImageColor(noiseImg, x, y);
+            float brightness = (col.r + col.g + col.b) / (3.0f * 255.0f);
+
+            // Threshold: Dark spots are Rock, Light spots are Grass
+            if (brightness < 0.5f) {
+                _tileArray[x][y] =TILE_TYPE_ROCK;
+            }
+            else {
+                _tileArray[x][y] = TILE_TYPE_GRASS;
+            }
+        }
+    }
+    UnloadImage(noiseImg);
+}

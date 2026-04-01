@@ -8,7 +8,13 @@ int main() {
     InitWindow(PCG::SCREEN_WIDTH, PCG::SCREEN_HEIGHT, "Construct Map Editor");
     
     PCG::TileMap tileMap; 
-    tileMap.CreateMap();
+
+    // Create an instance of a generator we want to use.
+	//PCG::RandomMapGenerator pureRandomGenerator;
+    tileMap.SetMapGenerator(new PCG::NoiseMapGenerator());
+	tileMap.GetMapGenerator()->Generate(tileMap.GetTileData()); // Generate the map using the selected generator
+
+    //tileMap.CreateMap();
 
     while (!WindowShouldClose()) {
         BeginDrawing();

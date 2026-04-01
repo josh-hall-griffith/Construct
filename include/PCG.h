@@ -34,31 +34,63 @@ namespace PCG {
     constexpr int BUTTON_Y = (SCREEN_HEIGHT - BUTTON_HEIGHT - 20);
     constexpr Rectangle RESET_BUTTON_BOUNDS = { BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT };
 
-    
+	// Pure Virtual Base Class for Map Generation Algorithms
+    class MapGenerator {
+    public:
+        virtual ~MapGenerator() = default; // virtual destructor
+        // This enforces that every child class MUST write their own Generate function.
+        virtual void Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) = 0;
+    };
+
+    // Derived classes for different map generation algorithms can be defined here.
+    // Random Map Generator
+    class RandomMapGenerator : public MapGenerator {
+    public:
+        RandomMapGenerator();   // constructor
+        ~RandomMapGenerator();  // destructor
+        void Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) override; // Override the pure virtual function
+    };
+
+    // Noise Map Generator (Perlin Noise or Simplex Noise could be used here)
+    class NoiseMapGenerator : public MapGenerator {
+        public:
+		    NoiseMapGenerator();   // constructor
+		    ~NoiseMapGenerator();  // destructor
+            void Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) override; // Override the pure virtual function
+    };
 
     class TileMap {
     public:
         TileMap();  // constructor
-		~TileMap(); // destructor
+        ~TileMap(); // destructor
 
         // Core Actions
         // Function Declarations
-        void CreateMap();
         void DrawMap() const; // 'const' means this functino won't change the map data
-        void PrintMap() const; 
+        void PrintMap() const;
         void DrawGUI();
 
         // I/O Functions
         void SaveMapData(const char* filename) const;
         void SaveMapImage(const char* filename) const;
         void LoadMapData(const char* filename);
-        
+
         // Accessors (Getters/Setters)
         void SetTile(int x, int y, PCG::TileType tileType);
         Color GetTileColor(TileType tileType) const;
         char GetTileChar(TileType tileType) const;
 
+        TileType(&GetTileData())[MAP_ROWS][MAP_COLUMNS]{
+			return tileArray;
+        }
+		// getter /setter for map generator 
+        void SetMapGenerator(MapGenerator* generator);
+        MapGenerator* GetMapGenerator() const;
+
     private:
         TileType tileArray[MAP_ROWS][MAP_COLUMNS] = {PCG::TileType::TILE_TYPE_ROCK};  // 2D array to hold tile types for the map
+        MapGenerator* mapGenerator;
     };
+
+    
 }
