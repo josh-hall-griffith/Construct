@@ -5,7 +5,7 @@ namespace PCG{
     // Screen & Map Dimensions
     constexpr int SCREEN_WIDTH = 1024;
     constexpr int SCREEN_HEIGHT = 1024;
-    constexpr int TILE_SIZE = 64;
+    constexpr int TILE_SIZE = 4;
     constexpr int MAP_COLUMNS = (SCREEN_WIDTH / TILE_SIZE);
     constexpr int MAP_ROWS = (SCREEN_HEIGHT / TILE_SIZE);
 
@@ -79,15 +79,17 @@ namespace PCG{
         void SetTile(int x, int y, PCG::TileType tileType);
         Color GetTileColor(TileType tileType) const;
         char GetTileChar(TileType tileType) const;
-        TileType* GetTileArray() const;
 
         // getter /setter for map generator 
         void SetMapGenerator(MapGenerator* generator);
         MapGenerator* GetMapGenerator() const;
 
+        // public tile array, for convenience but ideally hidden as private later
+        TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { PCG::TileType::TILE_TYPE_ROCK };  // 2D array to hold tile types for the map
+
     private:
         MapGenerator* mapGenerator;
-        TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { PCG::TileType::TILE_TYPE_ROCK };  // 2D array to hold tile types for the map
+        
     };
 
     
