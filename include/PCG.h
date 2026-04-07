@@ -34,23 +34,30 @@ namespace PCG{
     constexpr char* MAP_TEXT_FILENAME = "pcg_map_data.txt";
     constexpr char* MAP_IMAGE_FILENAME = "pcg_map.png";
 
-// Function Declarations
-void CreateMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
-void DrawMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
-void PrintMap(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]);
-Color GetTileColor(TileType tileType);
+    class TileMap {
+    public:
+        TileMap();  // constructor
+        ~TileMap(); // destructor
 
-// Helpers
-char GetTileChar(TileType tileType);
+        // Core Actions
+        // Function Declarations
+        void CreateMap();
+        void DrawMap() const; // 'const' means this function won't change the map data
+        void PrintMap() const;
+        void DrawGUI();
 
-// I/O Functions
-void SaveMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
-void LoadMapData(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
-void SaveMapImage(TileType _tileArray[MAP_ROWS][MAP_COLUMNS], const char* filename);
+        // I/O Functions
+        void SaveMapData(const char* filename) const;
+        void SaveMapImage(const char* filename) const;
+        void LoadMapData(const char* filename);
 
+        // Accessors (Getters/Setters)
+        void SetTile(int x, int y, PCG::TileType tileType);
+        Color GetTileColor(TileType tileType) const;
+        char GetTileChar(TileType tileType) const;
 
-
-// Declare UI drawing function
-void PCG_DrawGUI(TileType tileArray[MAP_ROWS][MAP_COLUMNS]);
+    private:
+        TileType tileArray[MAP_ROWS][MAP_COLUMNS] = { PCG::TileType::TILE_TYPE_ROCK };  // 2D array to hold tile types for the map
+    };
 
 }
