@@ -1,7 +1,7 @@
 #pragma once
 #include "raylib.h"
 
-namespace PCG{
+namespace PCG {
     // Screen & Map Dimensions
     constexpr int SCREEN_WIDTH = 1024;
     constexpr int SCREEN_HEIGHT = 1024;
@@ -16,7 +16,7 @@ namespace PCG{
         TILE_COUNT  // Automatically counts total types
     } TileType;
 
-// Visual & Character settings
+    // Visual & Character settings
     constexpr char GRASS_CHAR = '.';
     constexpr char ROCK_CHAR = '#';
     constexpr Color GRASS_COLOR = { 69, 182, 156, 255 };
@@ -58,6 +58,13 @@ namespace PCG{
         void Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) override;
     };
 
+    class GameOfLifeGenerator : public MapGenerator {
+    public:
+        GameOfLifeGenerator();
+        ~GameOfLifeGenerator();
+        void Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) override;
+    };
+
     class TileMap {
     public:
         TileMap();  // constructor
@@ -89,9 +96,9 @@ namespace PCG{
 
     private:
         MapGenerator* mapGenerator;
-        
+
     };
 
-    
+
 
 }

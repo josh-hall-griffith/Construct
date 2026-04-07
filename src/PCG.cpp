@@ -67,12 +67,12 @@ void PCG::TileMap::SetTile(int x, int y, TileType tileType)
 // ============================================= 
 Color PCG::TileMap::GetTileColor(PCG::TileType _tileType) const {
     switch (_tileType) {
-        case PCG::TileType::TILE_TYPE_GRASS: 
-            return GRASS_COLOR;
-        case TILE_TYPE_ROCK: 
-            return ROCK_COLOR;
-        default: 
-            return UNKNOWN_COLOR;
+    case PCG::TileType::TILE_TYPE_GRASS:
+        return GRASS_COLOR;
+    case TILE_TYPE_ROCK:
+        return ROCK_COLOR;
+    default:
+        return UNKNOWN_COLOR;
     }
 }
 
@@ -99,19 +99,18 @@ void PCG::TileMap::PrintMap() const {
 }
 
 
-
 // ============================================= 
 // char GetTileChar(TileType tileType)
 // Return a char value based on the type of tile passed in
 // ============================================= 
 char PCG::TileMap::GetTileChar(PCG::TileType _tileType) const {
     switch (_tileType) {
-        case PCG::TileType::TILE_TYPE_GRASS: 
-            return PCG::GRASS_CHAR;
-        case PCG::TileType::TILE_TYPE_ROCK: 
-            return PCG::ROCK_CHAR;
-        default: 
-            return '?';
+    case PCG::TileType::TILE_TYPE_GRASS:
+        return PCG::GRASS_CHAR;
+    case PCG::TileType::TILE_TYPE_ROCK:
+        return PCG::ROCK_CHAR;
+    default:
+        return '?';
     }
 }
 
@@ -176,7 +175,6 @@ void PCG::TileMap::LoadMapData(const char* _filename) {
     file.close(); // Close C++ file stream
     std::cout << "Map loaded from " << _filename << std::endl; // C++ style print statement
 }
-
 
 
 // ============================================= 
@@ -248,9 +246,6 @@ PCG::MapGenerator* PCG::TileMap::GetMapGenerator() const {
     return mapGenerator;
 }
 
-
-
-
 // =============================================
 // MapGenerator
 // =============================================
@@ -318,4 +313,23 @@ void PCG::NoiseMapGenerator::Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]
         }
     }
     UnloadImage(noiseImg);
+}
+
+// Derived classes will implement the Generate function to create different types of maps.
+// =============================================
+// GameOfLifeGenerator
+// =============================================
+// Constructor
+PCG::GameOfLifeGenerator::GameOfLifeGenerator() {
+    // nothing to initialize for now, but you could seed a random generator here if you want reproducible maps
+}
+
+// Destructor
+PCG::GameOfLifeGenerator::~GameOfLifeGenerator() {
+    // nothing to clean up for now, but if you had allocated resources (like noise generators) you would release them here
+}
+
+void PCG::GameOfLifeGenerator::Generate(TileType _tileArray[MAP_ROWS][MAP_COLUMNS]) {
+    (void)_tileArray;
+    std::cout << "TODO: implement game of life: " << std::endl;
 }
